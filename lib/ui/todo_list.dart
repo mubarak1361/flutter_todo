@@ -15,6 +15,7 @@ class TodoList extends StatefulWidget {
 class TodoListState extends State<TodoList> {
   List<Todo> _todoList = [];
   TodoProvider _todoProvider;
+  final GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -69,14 +70,18 @@ class TodoListState extends State<TodoList> {
   }
 
   Widget _createListItem(Todo todo) {
-    return new Card(
+    return new Dismissible(key: new Key(todo.id.toString()),
+    onDismissed: (dismissDirection){
+      _showSnackbar(todo);
+    },
+    child: new Card(
       child: new InkWell(
         onTap: () {},
         child: new Padding(
             padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 12.0),
             child: _createListItemContent(todo)),
       ),
-    );
+    ));
   }
 
   Widget _createListItemContent(Todo todo) {
@@ -121,9 +126,24 @@ class TodoListState extends State<TodoList> {
     ));
   }
 
+  _showSnackbar(Todo todo){
+    key.currentState.hideCurrentSnackBar();
+    key.currentState.showSnackBar(
+      new SnackBar(
+        duration: new Duration(seconds: 20),
+        content: new Text('${todo.note} is deleted'),
+        action: new SnackBarAction(
+          label: 'UNDO',
+          onPressed: () => key.currentState.hideCurrentSnackBar(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: key,
       appBar: _createAppBar(),
       body: _createListView(),
       floatingActionButton: _createFloatingActionButton(),
