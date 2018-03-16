@@ -72,7 +72,7 @@ class TodoListState extends State<TodoList> {
   Widget _createListItem(Todo todo) {
     return new Dismissible(key: new Key(todo.id.toString()),
     onDismissed: (dismissDirection){
-      _showSnackbar(todo);
+       _dismissListItem(todo);
     },
     child: new Card(
       child: new InkWell(
@@ -82,6 +82,11 @@ class TodoListState extends State<TodoList> {
             child: _createListItemContent(todo)),
       ),
     ));
+  }
+
+  _dismissListItem(Todo todo) async {
+    await _todoProvider.delete(todo.id);
+    _showSnackbar(todo);
   }
 
   Widget _createListItemContent(Todo todo) {
