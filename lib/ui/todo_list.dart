@@ -76,7 +76,7 @@ class TodoListState extends State<TodoList> {
     },
     child: new Card(
       child: new InkWell(
-        onTap: () {},
+        onTap: () {_openEditTodo(todo);},
         child: new Padding(
             padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 12.0),
             child: _createListItemContent(todo)),
@@ -145,6 +145,12 @@ class TodoListState extends State<TodoList> {
         ),
       ),
     );
+  }
+
+  _openEditTodo(Todo todo){
+    Navigator.of(context).push(new MaterialPageRoute(builder: (buildContext){
+      return new NewTodo(todo: todo);
+    }));
   }
 
   _undoTodo(Todo todo) async {

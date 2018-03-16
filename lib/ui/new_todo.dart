@@ -38,8 +38,11 @@ class NewTodoState extends State<NewTodo> {
     if(_formKey.currentState.validate()){
         _formKey.currentState.save();
         TodoProvider provider = new TodoProvider();
-        await provider.open();
-        await provider.insert(widget.todo);
+        if(!_isExistRecord()) {
+          await provider.insert(widget.todo);
+        }else{
+          await provider.update(widget.todo);
+        }
         Navigator.of(context).pop();
 
     }
@@ -81,9 +84,10 @@ class NewTodoState extends State<NewTodo> {
       decoration: const InputDecoration(
         contentPadding: const EdgeInsets.all(4.0),
         icon: const Icon(Icons.note),
-        hintText: 'What would you like to do ?',
-        labelText: 'Note',
+        hintText: 'Note',
+        labelText: 'What would you like to do ?',
       ),
+      initialValue: widget.todo.note!=null ? widget.todo.note :'',
       keyboardType: TextInputType.text,
       validator: (value){ return value.isEmpty ? 'Note is required': null; },
       onSaved: (String value) {
