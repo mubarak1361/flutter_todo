@@ -139,10 +139,18 @@ class TodoListState extends State<TodoList> {
         content: new Text('${todo.note} is deleted'),
         action: new SnackBarAction(
           label: 'UNDO',
-          onPressed: () => key.currentState.hideCurrentSnackBar(),
+          onPressed: () {
+              _undoTodo(todo);
+            },
         ),
       ),
     );
+  }
+
+  _undoTodo(Todo todo) async {
+    await _todoProvider.insert(todo);
+    getTodoList();
+    key.currentState.hideCurrentSnackBar();
   }
 
   @override
