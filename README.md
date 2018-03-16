@@ -1,6 +1,6 @@
 # flutter_todo
 
-A Flutter TO DO application.
+A Flutter TODO application.
 
 ## Getting Started
 
