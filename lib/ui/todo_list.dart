@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/util/date_util.dart';
@@ -15,6 +17,7 @@ class TodoList extends StatefulWidget {
 class TodoListState extends State<TodoList> {
   List<Todo> _todoList = [];
   TodoProvider _todoProvider;
+  bool _isToClose = false;
   final GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
 
   @override
@@ -60,11 +63,11 @@ class TodoListState extends State<TodoList> {
   Widget _createFloatingActionButton() {
     return new FloatingActionButton(
         child: const Icon(Icons.add), onPressed: () {
-          openNewTodo();
+          _openNewTodo();
     });
   }
 
-  openNewTodo() async {
+ Future _openNewTodo() async {
      await Navigator.of(context).pushNamed(NewTodo.ROUTE_NAME);
       getTodoList();
   }
@@ -161,11 +164,42 @@ class TodoListState extends State<TodoList> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return new WillPopScope(child: new Scaffold(
       key: key,
       appBar: _createAppBar(),
       body: _createListView(),
       floatingActionButton: _createFloatingActionButton(),
-    );
+    ), onWillPop: _showSnackbarOnClose);
   }
+
+  Future<bool> _showSnackbarOnClose() async{
+    key.currentState.hideCurrentSnackBar();
+    if(_isToClose){
+      SystemNavigator.pop();
+    }
+    key.currentState.showSnackBar(
+      new SnackBar(
+        duration: new Duration(seconds: 2),
+        content: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            new Icon(Icons.exit_to_app),
+            new Text('Press back again to exit')
+          ],
+        ),
+      ),
+    );
+    new Future.delayed(new Duration(seconds: 2),(){
+      _isToClose = false;
+    });
+    _isToClose = true;
+    return false;
+  }
+
+  List<Todo> _searchWord(String value){
+    return _todoList.where((todo) => todo.note.contains(value)).toList();
+  }
+
+
 }

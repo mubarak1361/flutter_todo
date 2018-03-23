@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/util/constants.dart';
@@ -34,7 +36,7 @@ class NewTodoState extends State<NewTodo> {
     );
   }
 
-  _saveTodo() async {
+   _saveTodo() async {
     if(_formKey.currentState.validate()){
         _formKey.currentState.save();
         TodoProvider provider = new TodoProvider();
@@ -71,12 +73,41 @@ class NewTodoState extends State<NewTodo> {
     return new Scaffold(appBar: _createAppBar(),
     body: new Padding(padding: new EdgeInsets.fromLTRB(12.0, 18.0, 12.0, 18.0),
     child: new Form(
+      onWillPop: _warnUserWithoutSaving,
         key: _formKey,
         child: new Column(
           children: <Widget>[
             _createNote()
           ],
         ),)),);
+  }
+
+  Future<bool> _warnUserWithoutSaving() async {
+    if(_isExistRecord()){
+      return true;
+    }else {
+      return await showDialog<bool>(
+        context: context,
+        child: new AlertDialog(
+          title: const Text('Discard To do'),
+          content: const Text('Do you want close without saving to do note?'),
+          actions: <Widget>[
+            new FlatButton(
+              child: const Text('YES'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            new FlatButton(
+              child: const Text('NO'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        ),
+      ) ?? false;
+    }
   }
 
   Widget _createNote(){
@@ -89,10 +120,18 @@ class NewTodoState extends State<NewTodo> {
       ),
       initialValue: widget.todo.note!=null ? widget.todo.note :'',
       keyboardType: TextInputType.text,
-      validator: (value){ return value.isEmpty ? 'Note is required': null; },
-      onSaved: (String value) {
-        widget.todo.note = value;
-        widget.todo.date = new DateTime.now().toIso8601String();},
+      validator: _validateNote,
+      onSaved: _noteOnSave,
     );
   }
+
+  String _validateNote(String value){
+    return value.isEmpty ? 'Note is required': null;
+  }
+
+  void _noteOnSave(String value){
+    widget.todo.note = value;
+    widget.todo.date = new DateTime.now().toIso8601String();
+  }
+
 }
