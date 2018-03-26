@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/util/date_util.dart';
-import 'package:flutter_todo/util/todoProvider.dart';
+import 'package:flutter_todo/util/todo_provider.dart';
 
 class TodoList extends StatefulWidget {
-
   @override
   TodoListState createState() => new TodoListState();
 }
@@ -37,8 +35,7 @@ class TodoListState extends State<TodoList> {
     await _todoProvider.open();
     await _todoProvider.getAllTodo().then((todoList) {
       setState(() {
-        if(todoList!=null)
-          this._todoList = todoList;
+        if (todoList != null) this._todoList = todoList;
       });
     });
   }
@@ -62,29 +59,37 @@ class TodoListState extends State<TodoList> {
 
   Widget _createFloatingActionButton() {
     return new FloatingActionButton(
-        child: const Icon(Icons.add), onPressed: () {
+        child: const Icon(Icons.add),
+        onPressed: () {
           _openNewTodo();
-    });
+        });
   }
 
- Future _openNewTodo() async {
-     await Navigator.of(context).pushNamed(NewTodo.ROUTE_NAME);
-      getTodoList();
+  Future _openNewTodo() async {
+    //await Navigator.of(context).pushNamed(NewTodo.ROUTE_NAME);
+    Todo todo = new Todo();
+    await Navigator.of(context).push(new MaterialPageRoute(builder: (buildContext) {
+      return new NewTodo(todo: todo);
+    }));
+    getTodoList();
   }
 
   Widget _createListItem(Todo todo) {
-    return new Dismissible(key: new Key(todo.id.toString()),
-    onDismissed: (dismissDirection){
-       _dismissListItem(todo);
-    },
-    child: new Card(
-      child: new InkWell(
-        onTap: () {_openEditTodo(todo);},
-        child: new Padding(
-            padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 12.0),
-            child: _createListItemContent(todo)),
-      ),
-    ));
+    return new Dismissible(
+        key: new Key(todo.id.toString()),
+        onDismissed: (dismissDirection) {
+          _dismissListItem(todo);
+        },
+        child: new Card(
+          child: new InkWell(
+            onTap: () {
+              _openEditTodo(todo);
+            },
+            child: new Padding(
+                padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 12.0),
+                child: _createListItemContent(todo)),
+          ),
+        ));
   }
 
   _dismissListItem(Todo todo) async {
@@ -115,7 +120,8 @@ class TodoListState extends State<TodoList> {
   }
 
   Widget _createListItemRightContent(Todo todo) {
-    return new Expanded(child: new Column(
+    return new Expanded(
+        child: new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         new Text(
@@ -128,13 +134,13 @@ class TodoListState extends State<TodoList> {
               color: Colors.black,
               fontSize: 16.0,
               decoration:
-              todo.done ? TextDecoration.lineThrough : TextDecoration.none),
+                  todo.done ? TextDecoration.lineThrough : TextDecoration.none),
         )
       ],
     ));
   }
 
-  _showSnackbar(Todo todo){
+  _showSnackbar(Todo todo) {
     key.currentState.hideCurrentSnackBar();
     key.currentState.showSnackBar(
       new SnackBar(
@@ -143,15 +149,15 @@ class TodoListState extends State<TodoList> {
         action: new SnackBarAction(
           label: 'UNDO',
           onPressed: () {
-              _undoTodo(todo);
-            },
+            _undoTodo(todo);
+          },
         ),
       ),
     );
   }
 
-  _openEditTodo(Todo todo){
-    Navigator.of(context).push(new MaterialPageRoute(builder: (buildContext){
+  _openEditTodo(Todo todo) {
+    Navigator.of(context).push(new MaterialPageRoute(builder: (buildContext) {
       return new NewTodo(todo: todo);
     }));
   }
@@ -164,17 +170,19 @@ class TodoListState extends State<TodoList> {
 
   @override
   Widget build(BuildContext context) {
-    return new WillPopScope(child: new Scaffold(
-      key: key,
-      appBar: _createAppBar(),
-      body: _createListView(),
-      floatingActionButton: _createFloatingActionButton(),
-    ), onWillPop: _showSnackbarOnClose);
+    return new WillPopScope(
+        child: new Scaffold(
+          key: key,
+          appBar: _createAppBar(),
+          body: _createListView(),
+          floatingActionButton: _createFloatingActionButton(),
+        ),
+        onWillPop: _showSnackbarOnClose);
   }
 
-  Future<bool> _showSnackbarOnClose() async{
+  Future<bool> _showSnackbarOnClose() async {
     key.currentState.hideCurrentSnackBar();
-    if(_isToClose){
+    if (_isToClose) {
       SystemNavigator.pop();
     }
     key.currentState.showSnackBar(
@@ -190,16 +198,14 @@ class TodoListState extends State<TodoList> {
         ),
       ),
     );
-    new Future.delayed(new Duration(seconds: 2),(){
+    new Future.delayed(new Duration(seconds: 2), () {
       _isToClose = false;
     });
     _isToClose = true;
     return false;
   }
 
-  List<Todo> _searchWord(String value){
+  List<Todo> _searchWord(String value) {
     return _todoList.where((todo) => todo.note.contains(value)).toList();
   }
-
-
 }

@@ -48,7 +48,8 @@ class TodoProvider {
   }
 
   Future<List<Todo>> getAllTodo() async {
-    List<Map> maps = await database.query(Todo.TABLE_NAME, orderBy: '${Todo.COLUMN_ID} DESC');
+    List<Map> maps = await database.query(Todo.TABLE_NAME,
+        orderBy: '${Todo.COLUMN_ID} DESC');
     List<Todo> todoList;
     if (maps.length > 0) {
       todoList = [];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/ui/todo_list.dart';
 
@@ -15,10 +16,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
       ),
       home: new TodoList(),
-      routes: <String,WidgetBuilder>{
-        NewTodo.ROUTE_NAME: (context) => new NewTodo()
-      },
+      /*routes: <String, WidgetBuilder>{
+        NewTodo.ROUTE_NAME: (context) => new NewTodo(todo: new Todo())
+      },*/
     );
   }
-
 }

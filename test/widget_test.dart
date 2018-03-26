@@ -4,19 +4,18 @@
 // find child widgets in the widget tree, read text, and verify that the values of widget properties
 // are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:flutter_todo/main.dart';
 import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/util/todoProvider.dart';
+import 'package:flutter_todo/util/todo_provider.dart';
 
 void main() {
   testWidgets('Todo insert smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     TodoProvider provider = new TodoProvider();
+    provider.open();
     Todo todo = new Todo(note: 'buy fruits',date: new DateTime.now().toIso8601String());
     todo = await provider.insert(todo);
     print(todo.id);
+    provider.close();
   });
 }
