@@ -17,29 +17,29 @@ class TodoProvider {
   Future open() async => database = await new DatabaseHelper().getDatabase();
 
   Future<Todo> insert(Todo todo) async {
-    todo.id = await database.insert(Todo.TABLE_NAME, todo.toMap());
+    todo.id = await database.insert(Todo.tableName, todo.toMap());
     return todo;
   }
 
   Future<int> delete(int id) async {
-    return await database.delete(Todo.TABLE_NAME,
-        where: "${Todo.COLUMN_ID} = ?", whereArgs: [id]);
+    return await database.delete(Todo.tableName,
+        where: "${Todo.columnId} = ?", whereArgs: [id]);
   }
 
   Future<int> update(Todo todo) async {
-    return await database.update(Todo.TABLE_NAME, todo.toMap(),
-        where: "${Todo.COLUMN_ID} = ?", whereArgs: [todo.id]);
+    return await database.update(Todo.tableName, todo.toMap(),
+        where: "${Todo.columnId} = ?", whereArgs: [todo.id]);
   }
 
   Future<Todo> getTodo(int id) async {
-    List<Map> maps = await database.query(Todo.TABLE_NAME,
+    List<Map> maps = await database.query(Todo.tableName,
         columns: [
-          Todo.COLUMN_ID,
-          Todo.COLUMN_NOTE,
-          Todo.COLUMN_DONE,
-          Todo.COLUMN_DATE
+          Todo.columnId,
+          Todo.columnNote,
+          Todo.columnDone,
+          Todo.columnDate
         ],
-        where: "${Todo.COLUMN_ID} = ?",
+        where: "${Todo.columnId} = ?",
         whereArgs: [id]);
     if (maps.length > 0) {
       return new Todo.fromMap(maps.first);
@@ -48,8 +48,8 @@ class TodoProvider {
   }
 
   Future<List<Todo>> getAllTodo() async {
-    List<Map> maps = await database.query(Todo.TABLE_NAME,
-        orderBy: '${Todo.COLUMN_ID} DESC');
+    List<Map> maps = await database.query(Todo.tableName,
+        orderBy: '${Todo.columnId} DESC');
     List<Todo> todoList;
     if (maps.length > 0) {
       todoList = [];

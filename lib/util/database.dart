@@ -10,18 +10,18 @@ class DatabaseHelper {
   DatabaseHelper._internal();
 
   Database _database;
-  final String _DB_NAME = 'todo_list.db';
+  final String _dbName = 'todo_list.db';
   static final DatabaseHelper _databaseHelper = new DatabaseHelper._internal();
-  final String _CREATE_TABLE_TODO = 'CREATE TABLE ' +
-      Todo.TABLE_NAME +
+  final String _createTableTodo = 'CREATE TABLE ' +
+      Todo.tableName +
       '(' +
-      Todo.COLUMN_ID +
+      Todo.columnId +
       ' INTEGER PRIMARY KEY AUTOINCREMENT,' +
-      Todo.COLUMN_NOTE +
+      Todo.columnNote +
       ' TEXT,' +
-      Todo.COLUMN_DONE +
+      Todo.columnDone +
       ' INTEGER,' +
-      Todo.COLUMN_DATE +
+      Todo.columnDate +
       ' TEXT )';
 
   factory DatabaseHelper() {
@@ -38,7 +38,7 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     print(documentsDirectory);
 
-    String path = join(documentsDirectory.path, _DB_NAME);
+    String path = join(documentsDirectory.path, _dbName);
 
     // make sure the folder exists
     if (!await new Directory(dirname(path)).exists()) {
@@ -56,7 +56,7 @@ class DatabaseHelper {
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       //When creating the db, create the table
-      await db.execute(_CREATE_TABLE_TODO);
+      await db.execute(_createTableTodo);
     });
     return database;
   }

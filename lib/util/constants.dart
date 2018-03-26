@@ -1,4 +1,4 @@
 class Constants {
-  static final String TITLE_NEW = 'New Todo';
-  static final String TITLE_EDIT = 'Edit Todo';
+  static String get titleNew => 'New Todo';
+  static String get titleEdit => 'Edit Todo';
 }

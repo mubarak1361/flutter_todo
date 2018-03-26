@@ -8,8 +8,8 @@ import 'package:flutter_todo/util/todo_provider.dart';
 
 class NewTodo extends StatefulWidget {
 
-  static final String ROUTE_NAME = '/new';
-  Todo todo;
+  static final String routeName = '/new';
+  final Todo todo;
 
   NewTodo({Key key, this.todo}):super(key: key) {
     if (todo.date == null) {
@@ -68,7 +68,7 @@ class NewTodoState extends State<NewTodo> {
   }
 
   String _getTitle() {
-    return _isExistRecord() ? Constants.TITLE_EDIT : Constants.TITLE_NEW;
+    return _isExistRecord() ? Constants.titleEdit : Constants.titleNew;
   }
 
   @override

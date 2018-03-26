@@ -11,7 +11,7 @@ class DateUtil {
   }
 
   static String _addDateTimePrefix(String dateTime) {
-    return dateTime.length > 1 ? dateTime : '0${dateTime}';
+    return dateTime.length > 1 ? dateTime : '0$dateTime';
   }
 
   static String getFormattedDate(String date) {

@@ -1,10 +1,10 @@
 class Todo {
-  static String get TABLE_NAME => 'todo';
+  static String get tableName => 'todo';
 
-  static String get COLUMN_ID => 'id';
-  static String get COLUMN_NOTE => 'note';
-  static String get COLUMN_DONE => 'done';
-  static String get COLUMN_DATE => 'date';
+  static String get columnId => 'id';
+  static String get columnNote => 'note';
+  static String get columnDone => 'done';
+  static String get columnDate => 'date';
 
   int id;
   String note;
@@ -15,17 +15,17 @@ class Todo {
 
   Map toMap() {
     Map map = {
-      COLUMN_NOTE: note,
-      COLUMN_DONE: done == true ? 1 : 0,
-      COLUMN_DATE: date
+      columnNote: note,
+      columnDone: done == true ? 1 : 0,
+      columnDate: date
     };
     return map;
   }
 
   Todo.fromMap(Map map) {
-    id = map[COLUMN_ID];
-    note = map[COLUMN_NOTE];
-    done = map[COLUMN_DONE] == 1;
-    date = map[COLUMN_DATE];
+    id = map[columnId];
+    note = map[columnNote];
+    done = map[columnDone] == 1;
+    date = map[columnDate];
   }
 }
