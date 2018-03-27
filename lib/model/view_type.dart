@@ -1,0 +1,1 @@
+enum ViewType { HEADER, TODO }

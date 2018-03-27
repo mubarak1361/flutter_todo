@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class DateUtil {
   static String getFormattedTime(String dateTime) {
     TimeOfDay timeOfDay = new TimeOfDay.fromDateTime(DateTime.parse(dateTime));
-    return '${_addDateTimePrefix(timeOfDay.hourOfPeriod.toString())} : ${_addDateTimePrefix(timeOfDay.minute.toString())} ${getTimePeriod(timeOfDay)}';
+    return '${_addDateTimePrefix(timeOfDay.hourOfPeriod.toString())} : ${_addDateTimePrefix(timeOfDay.minute.toString())} ${_getTimePeriod(timeOfDay)}';
   }
 
-  static String getTimePeriod(TimeOfDay timeOfDay) {
+  static String _getTimePeriod(TimeOfDay timeOfDay) {
     return timeOfDay.periodOffset == 0 ? 'AM' : 'PM';
   }
 

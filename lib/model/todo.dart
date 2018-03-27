@@ -1,4 +1,7 @@
-class Todo {
+import 'package:flutter_todo/model/item.dart';
+import 'package:flutter_todo/model/view_type.dart';
+
+class Todo implements Item {
   static String get tableName => 'todo';
 
   static String get columnId => 'id';
@@ -27,5 +30,10 @@ class Todo {
     note = map[columnNote];
     done = map[columnDone] == 1;
     date = map[columnDate];
+  }
+
+  @override
+  ViewType getViewType() {
+    return ViewType.TODO;
   }
 }

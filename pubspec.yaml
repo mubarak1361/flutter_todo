@@ -10,6 +10,7 @@ dependencies:
   cupertino_icons: ^0.1.0
   sqflite: "^0.8.2"
   path_provider: '>=0.3.0'
+  intl: "^0.15.4"
 
 dev_dependencies:
   flutter_test:

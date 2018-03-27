@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/util/constants.dart';
-import 'package:flutter_todo/util/date_util.dart';
 import 'package:flutter_todo/util/todo_provider.dart';
+import 'package:intl/intl.dart';
 
 class NewTodo extends StatefulWidget {
-
   static final String routeName = '/new';
   final Todo todo;
+  final DateFormat formatter = new DateFormat.yMMMMd("en_US");
 
-  NewTodo({Key key, this.todo}):super(key: key) {
+  NewTodo({Key key, this.todo}) : super(key: key) {
     if (todo.date == null) {
-        this.todo.date = new DateTime.now().toIso8601String();
+      this.todo.date = formatter.format(new DateTime.now());
     }
   }
 
@@ -95,19 +95,15 @@ class NewTodoState extends State<NewTodo> {
       children: <Widget>[
         new Icon(
           Icons.date_range,
-          color: Theme
-              .of(context)
-              .primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
         new InkWell(
           child: new Padding(
             padding: new EdgeInsets.only(
                 left: 18.0, top: 8.0, bottom: 8.0, right: 18.0),
             child: new Text(
-              DateUtil.getFormattedDate(widget.todo.date),
-              style: new TextStyle(color: Theme
-                  .of(context)
-                  .primaryColor),
+              widget.todo.date,
+              style: new TextStyle(color: Theme.of(context).primaryColor,fontSize: 14.0),
             ),
           ),
           onTap: _pickDateFromDatePicker,
@@ -117,24 +113,22 @@ class NewTodoState extends State<NewTodo> {
   }
 
   _pickDateFromDatePicker() async {
+    DateTime dateTime = widget.formatter.parse(widget.todo.date);
     DateTime dateTimePicked = await showDatePicker(
         context: context,
-        initialDate: DateTime.parse(widget.todo.date),
-        firstDate: isBeforeToday(DateTime.parse(widget.todo.date))
-            ? DateTime.parse(widget.todo.date)
-            : new DateTime.now(),
-        lastDate:
-        DateTime.parse(widget.todo.date).add(const Duration(days: 365)));
+        initialDate: dateTime,
+        firstDate: isBeforeToday(dateTime) ? dateTime : new DateTime.now(),
+        lastDate: dateTime.add(const Duration(days: 365)));
 
     if (dateTimePicked != null) {
       setState(() {
-        widget.todo.date = dateTimePicked.toIso8601String();
+        widget.todo.date = widget.formatter.format(dateTimePicked);
       });
     }
   }
 
   bool isBeforeToday(DateTime date) {
-    return DateTime.parse(widget.todo.date).isBefore(new DateTime.now());
+    return date.isBefore(new DateTime.now());
   }
 
   Future<bool> _warnUserWithoutSaving() async {
@@ -142,33 +136,35 @@ class NewTodoState extends State<NewTodo> {
       return true;
     } else {
       return await showDialog<bool>(
-        context: context,
-        child: new AlertDialog(
-          title: const Text('Discard To do'),
-          content:
-          const Text('Do you want close without saving to do note?'),
-          actions: <Widget>[
-            new FlatButton(
-              child: const Text('YES'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
+            context: context,
+            child: new AlertDialog(
+              title: const Text('Discard To do'),
+              content:
+                  const Text('Do you want close without saving to do note?'),
+              actions: <Widget>[
+                new FlatButton(
+                  child: const Text('YES'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+                new FlatButton(
+                  child: const Text('NO'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+              ],
             ),
-            new FlatButton(
-              child: const Text('NO'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-          ],
-        ),
-      ) ??
+          ) ??
           false;
     }
   }
 
   Widget _createNote() {
     return new TextFormField(
+      textAlign: TextAlign.justify,
+      maxLines: 3,
       decoration: const InputDecoration(
         contentPadding: const EdgeInsets.all(4.0),
         icon: const Icon(Icons.note),

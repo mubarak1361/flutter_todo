@@ -22,8 +22,8 @@ class TodoProvider {
   }
 
   Future<int> delete(int id) async {
-    return await database.delete(Todo.tableName,
-        where: "${Todo.columnId} = ?", whereArgs: [id]);
+    return await database
+        .delete(Todo.tableName, where: "${Todo.columnId} = ?", whereArgs: [id]);
   }
 
   Future<int> update(Todo todo) async {
@@ -48,8 +48,8 @@ class TodoProvider {
   }
 
   Future<List<Todo>> getAllTodo() async {
-    List<Map> maps = await database.query(Todo.tableName,
-        orderBy: '${Todo.columnId} DESC');
+    List<Map> maps =
+        await database.query(Todo.tableName, orderBy: '${Todo.columnId} DESC');
     List<Todo> todoList;
     if (maps.length > 0) {
       todoList = [];
