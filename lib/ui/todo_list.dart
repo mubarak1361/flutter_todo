@@ -9,6 +9,7 @@ import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/util/todo_provider.dart';
 import 'package:intl/intl.dart';
 
+
 class TodoList extends StatefulWidget {
   @override
   TodoListState createState() => new TodoListState();
@@ -67,7 +68,7 @@ class TodoListState extends State<TodoList> {
     switch(item.getViewType()){
       case ViewType.HEADER:
         return new Container(
-          color: Colors.grey.withOpacity(0.15),
+          //color: Colors.grey.withOpacity(0.15),
           padding: new EdgeInsets.fromLTRB(18.0, 16.0, 18.0, 16.0),
           child: new Text(item.date),
         );
@@ -102,6 +103,7 @@ class TodoListState extends State<TodoList> {
 
   Widget _createListItem(Todo todo) {
     return new Dismissible(
+        direction: DismissDirection.endToStart,
         key: new Key(todo.id.toString()),
         onDismissed: (dismissDirection) {
           _dismissListItem(todo);
@@ -112,7 +114,7 @@ class TodoListState extends State<TodoList> {
               _openEditTodo(todo);
             },
             child: new Padding(
-                padding: const EdgeInsets.fromLTRB(0.0,8.0,12.0,8.0),
+                padding: const EdgeInsets.fromLTRB(0.0,8.0,14.0,8.0),
                 child: _createListItemContent(todo)),
           ),
         ));
@@ -125,7 +127,7 @@ class TodoListState extends State<TodoList> {
 
   Widget _createListItemContent(Todo todo) {
     return new Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _createListItemLeftContent(todo),
         _createListItemRightContent(todo)
@@ -149,7 +151,7 @@ class TodoListState extends State<TodoList> {
     return new Expanded(
         child: new Text(
           todo.note,
-          textAlign: TextAlign.justify,
+          textAlign: TextAlign.start,
           style: new TextStyle(
               color: Colors.black,
               fontSize: 16.0,

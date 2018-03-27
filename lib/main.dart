@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/ui/todo_list.dart';
 
 void main() => runApp(new MyApp());
