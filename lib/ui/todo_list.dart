@@ -127,7 +127,7 @@ class TodoListState extends State<TodoList> {
 
   Widget _createListItemContent(Todo todo) {
     return new Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         _createListItemLeftContent(todo),
         _createListItemRightContent(todo)
@@ -139,9 +139,7 @@ class TodoListState extends State<TodoList> {
     return new Checkbox(
       value: todo.done,
       onChanged: (change) {
-        setState(() {
-          todo.done = change;
-        });
+        setState(() => todo.done = change);
         _todoProvider.update(todo);
       },
     );
@@ -151,7 +149,6 @@ class TodoListState extends State<TodoList> {
     return new Expanded(
         child: new Text(
           todo.note,
-          textAlign: TextAlign.start,
           style: new TextStyle(
               color: Colors.black,
               fontSize: 16.0,
