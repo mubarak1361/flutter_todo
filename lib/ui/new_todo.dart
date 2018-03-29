@@ -103,7 +103,8 @@ class NewTodoState extends State<NewTodo> {
                 left: 18.0, top: 8.0, bottom: 8.0, right: 18.0),
             child: new Text(
               widget.todo.date,
-              style: new TextStyle(color: Theme.of(context).primaryColor,fontSize: 14.0),
+              style: new TextStyle(
+                  color: Theme.of(context).primaryColor, fontSize: 14.0),
             ),
           ),
           onTap: _pickDateFromDatePicker,

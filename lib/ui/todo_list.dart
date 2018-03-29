@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_todo/model/header.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_todo/model/view_type.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
 import 'package:flutter_todo/util/todo_provider.dart';
 import 'package:intl/intl.dart';
-
 
 class TodoList extends StatefulWidget {
   @override
@@ -21,6 +21,7 @@ class TodoListState extends State<TodoList> {
   TodoProvider _todoProvider;
   bool _isToClose = false;
   final GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
+  bool _isSearchOpen = false;
 
   @override
   void initState() {
@@ -38,12 +39,9 @@ class TodoListState extends State<TodoList> {
     _todoProvider = new TodoProvider();
     await _todoProvider.open();
     await _todoProvider.getAllTodo().then((todoList) {
-
       setState(() {
         if (todoList != null) this._todoList = _getSortedTodoList(todoList);
-
       });
-
     });
   }
 
@@ -51,24 +49,33 @@ class TodoListState extends State<TodoList> {
     return new AppBar(
       leading: const Icon(Icons.beenhere),
       title: const Text('To Do List'),
+      actions: <Widget>[
+        new IconButton(
+            icon: new Icon(Icons.search),
+            onPressed: () {
+              setState(() => _isSearchOpen = true);
+            })
+      ],
     );
   }
 
   Widget _createListView() {
-    return new ListView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        return _createItemByViewType(_todoList[index]);
-      },
-      itemCount: _todoList.length,
-      padding: const EdgeInsets.only(bottom: 8.0),
+    return new Scrollbar(
+      child: new ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return _createItemByViewType(_todoList[index]);
+        },
+        itemCount: _todoList.length,
+        padding: const EdgeInsets.only(bottom: 8.0),
+      ),
     );
   }
 
-  Widget _createItemByViewType(dynamic item){
-    switch(item.getViewType()){
+  Widget _createItemByViewType(dynamic item) {
+    switch (item.getViewType()) {
       case ViewType.HEADER:
         return new Container(
-          //color: Colors.grey.withOpacity(0.15),
           padding: new EdgeInsets.fromLTRB(18.0, 16.0, 18.0, 16.0),
           child: new Text(item.date),
         );
@@ -93,13 +100,11 @@ class TodoListState extends State<TodoList> {
     Todo todo = new Todo();
     await Navigator
         .of(context)
-        .push(new MaterialPageRoute(builder: (buildContext) {
+        .push(new CupertinoPageRoute(builder: (buildContext) {
       return new NewTodo(todo: todo);
     }));
     _getTodoList();
   }
-
-
 
   Widget _createListItem(Todo todo) {
     return new Dismissible(
@@ -114,7 +119,7 @@ class TodoListState extends State<TodoList> {
               _openEditTodo(todo);
             },
             child: new Padding(
-                padding: const EdgeInsets.fromLTRB(0.0,8.0,14.0,8.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 8.0, 14.0, 8.0),
                 child: _createListItemContent(todo)),
           ),
         ));
@@ -148,13 +153,13 @@ class TodoListState extends State<TodoList> {
   Widget _createListItemRightContent(Todo todo) {
     return new Expanded(
         child: new Text(
-          todo.note,
-          style: new TextStyle(
-              color: Colors.black,
-              fontSize: 16.0,
-              decoration:
+      todo.note,
+      style: new TextStyle(
+          color: Colors.black,
+          fontSize: 16.0,
+          decoration:
               todo.done ? TextDecoration.lineThrough : TextDecoration.none),
-        ));
+    ));
   }
 
   _showSnackbar(Todo todo) {
@@ -174,7 +179,7 @@ class TodoListState extends State<TodoList> {
   }
 
   _openEditTodo(Todo todo) {
-    Navigator.of(context).push(new MaterialPageRoute(builder: (buildContext) {
+    Navigator.of(context).push(new CupertinoPageRoute(builder: (buildContext) {
       return new NewTodo(todo: todo);
     }));
   }
@@ -190,11 +195,84 @@ class TodoListState extends State<TodoList> {
     return new WillPopScope(
         child: new Scaffold(
           key: key,
-          appBar: _createAppBar(),
-          body: _createListView(),
+          //appBar: _createAppBar(),
+          body: _createBody(),
           floatingActionButton: _createFloatingActionButton(),
         ),
         onWillPop: _showSnackbarOnClose);
+  }
+
+  Widget _createBody() {
+    return new Column(
+      children: <Widget>[
+        _isSearchOpen ? _createStatusBar() : new Container(),
+        _isSearchOpen ? _createSearchBar() : _createAppBar(),
+        new Expanded(child: _createListView())
+      ],
+    );
+  }
+
+  Widget _createStatusBar() {
+    return new Container(
+        color: Theme.of(context).primaryColor,
+        width: MediaQuery.of(context).size.width,
+        height: 24.0);
+  }
+
+  Widget _createSearchBar() {
+    return new Material(
+      color: Theme.of(context).primaryColor,
+      elevation: 20.0,
+
+      shadowColor: Colors.grey.shade900,
+      child: new Container(
+          padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+          width: MediaQuery.of(context).size.width,
+          height: 56.0,
+          child: _createSearchView()),
+    );
+  }
+
+  Widget _createSearchView() {
+    return new Card(
+      elevation: 3.0,
+      child: new Row(
+        children: <Widget>[
+          new Expanded(
+              flex: 9,
+              child: new TextField(
+                  maxLines: 1,
+                  onChanged: (value) {
+                    _searchTodo(value).then((todoList) {
+                      setState(() => this._todoList = todoList);
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    fillColor: Colors.transparent,
+                    contentPadding:
+                        const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: 'Search',
+                  ))),
+          new Expanded(
+            flex: 1,
+            child: new IconButton(
+              icon: new Icon(
+                Icons.close,
+                color: Colors.grey.withOpacity(0.8),
+              ),
+              onPressed: () {
+                setState(() { _isSearchOpen = false;
+                _searchTodo('').then((todoList) {
+                  setState(() => this._todoList = todoList);
+                });});
+              },
+              padding: new EdgeInsets.only(left: 4.0, right: 8.0),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<bool> _showSnackbarOnClose() async {
@@ -222,21 +300,29 @@ class TodoListState extends State<TodoList> {
     return false;
   }
 
-  List<Todo> _searchWord(String value) {
-    return _todoList.where((todo) => todo.note.contains(value));
+  Future<List<dynamic>> _searchTodo(String value) async {
+    List<Todo> allTodo = [];
+    await _todoProvider.getAllTodo().then((todoList) {
+      if (value.isNotEmpty) {
+        allTodo = todoList.where((todo) => todo.note.toLowerCase().contains(value.toLowerCase())).toList();
+      } else {
+        allTodo = todoList;
+      }
+    });
+    return _getSortedTodoList(allTodo);
   }
 
-  List<String> _getDateList(List<Todo> todoList){
+  List<String> _getDateList(List<Todo> todoList) {
     List<String> dates = todoList.map((todo) => todo.date).toSet().toList();
-    dates.sort((date1,date2){
+    dates.sort((date1, date2) {
       return formatter.parse(date1).isAfter(formatter.parse(date2)) ? 1 : 0;
     });
     return dates;
   }
 
-  List<dynamic> _getSortedTodoList(List<Todo> todoList){
+  List<dynamic> _getSortedTodoList(List<Todo> todoList) {
     List<dynamic> items = [];
-    _getDateList(todoList).forEach((date){
+    _getDateList(todoList).forEach((date) {
       items.add(new Header(date: date));
       items.addAll(todoList.where((todo) => todo.date == date).toList());
     });
