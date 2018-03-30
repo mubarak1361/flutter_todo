@@ -8,11 +8,13 @@ class Todo implements Item {
   static String get columnNote => 'note';
   static String get columnDone => 'done';
   static String get columnDate => 'date';
+  static String get columnCategoryId => 'category_id';
 
   int id;
   String note;
   String date;
   bool done;
+  int categoryId;
 
   Todo({this.note, this.done = false, this.date});
 
@@ -20,7 +22,8 @@ class Todo implements Item {
     Map map = {
       columnNote: note,
       columnDone: done == true ? 1 : 0,
-      columnDate: date
+      columnDate: date,
+      //columnCategoryId: categoryId
     };
     return map;
   }
@@ -30,6 +33,7 @@ class Todo implements Item {
     note = map[columnNote];
     done = map[columnDone] == 1;
     date = map[columnDate];
+    //categoryId = map[columnCategoryId];
   }
 
   @override

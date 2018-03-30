@@ -6,7 +6,6 @@ import 'package:sqflite/sqflite.dart';
 
 class TodoProvider {
   static final _todoProvider = new TodoProvider._internal();
-  Database database;
 
   TodoProvider._internal();
 
@@ -14,52 +13,62 @@ class TodoProvider {
     return _todoProvider;
   }
 
-  Future open() async => database = await new DatabaseHelper().getDatabase();
+  Future<Database> _open() async => await new DatabaseHelper().getDatabase();
 
   Future<Todo> insert(Todo todo) async {
-    todo.id = await database.insert(Todo.tableName, todo.toMap());
+    await _open()
+        .then((database) async =>
+    await database.insert(Todo.tableName, todo.toMap()))
+        .then((id) => todo.id = id).whenComplete(() async => await _close());
     return todo;
   }
 
   Future<int> delete(int id) async {
-    return await database
-        .delete(Todo.tableName, where: "${Todo.columnId} = ?", whereArgs: [id]);
+    return await _open().then((database) async {
+      return await database.delete(Todo.tableName,
+          where: '${Todo.columnId} = ?', whereArgs: [id]);
+    }).whenComplete(() async => await _close());
   }
 
   Future<int> update(Todo todo) async {
-    return await database.update(Todo.tableName, todo.toMap(),
-        where: "${Todo.columnId} = ?", whereArgs: [todo.id]);
+    return await _open().then((database) async {
+      return await database.update(Todo.tableName, todo.toMap(),
+          where: '${Todo.columnId} = ?', whereArgs: [todo.id]);
+    }).whenComplete(() async => _close());
   }
 
   Future<Todo> getTodo(int id) async {
-    List<Map> maps = await database.query(Todo.tableName,
-        columns: [
-          Todo.columnId,
-          Todo.columnNote,
-          Todo.columnDone,
-          Todo.columnDate
-        ],
-        where: "${Todo.columnId} = ?",
-        whereArgs: [id]);
-    if (maps.length > 0) {
-      return new Todo.fromMap(maps.first);
-    }
-    return null;
+    return await _open().then((database) async {
+      return await database.query(Todo.tableName,
+          columns: [
+            Todo.columnId,
+            Todo.columnNote,
+            Todo.columnDone,
+            Todo.columnDate
+          ],
+          where: '${Todo.columnId} = ?',
+          whereArgs: [id]);
+    }).then((maps) {
+      if (maps.length > 0) {
+        return new Todo.fromMap(maps.first);
+      }
+    }).whenComplete(() async => _close());
   }
 
   Future<List<Todo>> getAllTodo() async {
-    List<Map> maps =
-        await database.query(Todo.tableName, orderBy: '${Todo.columnId} DESC');
-    List<Todo> todoList;
-    if (maps.length > 0) {
-      todoList = [];
-      maps.forEach((map) {
-        todoList.add(new Todo.fromMap(map));
-      });
-      return todoList;
-    }
-    return null;
+    return await _open()
+        .then((database) async => await database.query(Todo.tableName,
+            orderBy: '${Todo.columnId} DESC'))
+        .then((maps) {
+      if (maps.length > 0) {
+        List<Todo> todoList = [];
+        maps.forEach((map) {
+          todoList.add(new Todo.fromMap(map));
+        });
+        return todoList;
+      }
+    }).whenComplete(() async => _close());
   }
 
-  Future close() async => await new DatabaseHelper().closedatabase();
+  Future _close() async => await new DatabaseHelper().closedatabase();
 }

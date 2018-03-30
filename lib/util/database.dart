@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,6 +24,13 @@ class DatabaseHelper {
       ' INTEGER,' +
       Todo.columnDate +
       ' TEXT )';
+  final String _createCategoryTable = 'CREATE TABLE ' +
+      Category.tableName +
+      '(' +
+      Category.columnId +
+      ' INTEGER PRIMARY KEY AUTOINCREMENT,' +
+      Category.columnName +
+      ' TEXT,';
 
   factory DatabaseHelper() {
     return _databaseHelper;
@@ -57,6 +65,7 @@ class DatabaseHelper {
         onCreate: (Database db, int version) async {
       //When creating the db, create the table
       await db.execute(_createTableTodo);
+      await db.execute(_createCategoryTable);
     });
     return database;
   }

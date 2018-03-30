@@ -26,18 +26,16 @@ class TodoListState extends State<TodoList> {
   @override
   void initState() {
     super.initState();
+    _todoProvider = new TodoProvider();
     _getTodoList();
   }
 
   @override
   void dispose() {
-    _todoProvider.close();
     super.dispose();
   }
 
   Future _getTodoList() async {
-    _todoProvider = new TodoProvider();
-    await _todoProvider.open();
     await _todoProvider.getAllTodo().then((todoList) {
       setState(() {
         if (todoList != null) this._todoList = _getSortedTodoList(todoList);
@@ -127,6 +125,7 @@ class TodoListState extends State<TodoList> {
 
   _dismissListItem(Todo todo) async {
     await _todoProvider.delete(todo.id);
+    _todoList.remove(todo);
     _showSnackbar(todo);
   }
 
@@ -223,7 +222,6 @@ class TodoListState extends State<TodoList> {
     return new Material(
       color: Theme.of(context).primaryColor,
       elevation: 20.0,
-
       shadowColor: Colors.grey.shade900,
       child: new Container(
           padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
@@ -262,10 +260,12 @@ class TodoListState extends State<TodoList> {
                 color: Colors.grey.withOpacity(0.8),
               ),
               onPressed: () {
-                setState(() { _isSearchOpen = false;
-                _searchTodo('').then((todoList) {
-                  setState(() => this._todoList = todoList);
-                });});
+                setState(() {
+                  _isSearchOpen = false;
+                  _searchTodo('').then((todoList) {
+                    setState(() => this._todoList = todoList);
+                  });
+                });
               },
               padding: new EdgeInsets.only(left: 4.0, right: 8.0),
             ),
@@ -304,7 +304,10 @@ class TodoListState extends State<TodoList> {
     List<Todo> allTodo = [];
     await _todoProvider.getAllTodo().then((todoList) {
       if (value.isNotEmpty) {
-        allTodo = todoList.where((todo) => todo.note.toLowerCase().contains(value.toLowerCase())).toList();
+        allTodo = todoList
+            .where(
+                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))
+            .toList();
       } else {
         allTodo = todoList;
       }
