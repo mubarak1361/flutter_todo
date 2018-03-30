@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class Category {
   static String get tableName => 'category';
 
@@ -7,7 +9,7 @@ class Category {
   int id;
   String name;
 
-  Category({this.name});
+  Category({@required this.name});
 
   Map toMap() {
     Map map = {columnName: name};

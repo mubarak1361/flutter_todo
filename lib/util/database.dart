@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/todo.dart';
+import 'package:flutter_todo/util/category_provider.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -66,6 +67,10 @@ class DatabaseHelper {
       //When creating the db, create the table
       await db.execute(_createTableTodo);
       await db.execute(_createCategoryTable);
+      CategoryProvider provider = new CategoryProvider();
+      ['Default', 'Personal', 'Shopping', 'Wishlist', 'Work'].forEach((categoryName) async{
+        await provider.insert(new Category(name: categoryName));
+      });
     });
     return database;
   }
