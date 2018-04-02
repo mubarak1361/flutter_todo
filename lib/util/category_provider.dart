@@ -26,4 +26,20 @@ class CategoryProvider{
     return category;
   }
 
+  Future<List<Category>> getAllCategory() async {
+    return _open()
+        .then((database) async => await database.query(Category.tableName,
+        orderBy: '${Category.columnId} ASC'))
+        .then((maps) {
+      if (maps.length > 0) {
+        List<Category> categoryList = [];
+        maps.forEach((map) {
+          categoryList.add(new Category.fromMap(map));
+        });
+        return categoryList;
+      }
+    }).whenComplete(() async => _close());
+  }
+
+
 }

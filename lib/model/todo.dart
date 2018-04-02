@@ -23,7 +23,7 @@ class Todo implements Item {
       columnNote: note,
       columnDone: done == true ? 1 : 0,
       columnDate: date,
-      //columnCategoryId: categoryId
+      columnCategoryId: categoryId
     };
     return map;
   }
@@ -33,7 +33,7 @@ class Todo implements Item {
     note = map[columnNote];
     done = map[columnDone] == 1;
     date = map[columnDate];
-    //categoryId = map[columnCategoryId];
+    categoryId = map[columnCategoryId];
   }
 
   @override

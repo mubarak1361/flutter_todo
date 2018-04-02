@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/header.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/model/view_type.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
+import 'package:flutter_todo/util/category_provider.dart';
 import 'package:flutter_todo/util/todo_provider.dart';
 import 'package:intl/intl.dart';
 
@@ -19,15 +21,19 @@ class TodoListState extends State<TodoList> {
   final DateFormat formatter = new DateFormat.yMMMMd("en_US");
   List<dynamic> _todoList = [];
   TodoProvider _todoProvider;
+  CategoryProvider _categoryProvider;
   bool _isToClose = false;
   final GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
   bool _isSearchOpen = false;
+  List<Category> _categoryList = [];
+  Category _category;
 
   @override
   void initState() {
     super.initState();
     _todoProvider = new TodoProvider();
-    _getTodoList();
+    _categoryProvider = new CategoryProvider();
+    _getCatergoyList().whenComplete(() => _getTodoList());
   }
 
   @override
@@ -36,17 +42,25 @@ class TodoListState extends State<TodoList> {
   }
 
   Future _getTodoList() async {
-    await _todoProvider.getAllTodo().then((todoList) {
+     return _todoProvider.getAllTodo().then((todoList) {
       setState(() {
         if (todoList != null) this._todoList = _getSortedTodoList(todoList);
       });
     });
   }
 
+  Future _getCatergoyList() async {
+     return _categoryProvider.getAllCategory().then((categories){
+        categories.insert(0, new Category(id: -1,name: 'All Lists'));
+        categories.insert(categories.length, new Category(id: -2,name: 'Finished'));
+        setState(()=> _categoryList = categories);
+      });
+  }
+
   Widget _createAppBar() {
     return new AppBar(
       leading: const Icon(Icons.beenhere),
-      title: const Text('To Do List'),
+      title: _createCategoryDropDownList(_categoryList),//const Text('To Do List'),
       actions: <Widget>[
         new IconButton(
             icon: new Icon(Icons.search),
@@ -61,7 +75,7 @@ class TodoListState extends State<TodoList> {
     return new Scrollbar(
       child: new ListView.builder(
         shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (context,index) {
           return _createItemByViewType(_todoList[index]);
         },
         itemCount: _todoList.length,
@@ -275,6 +289,29 @@ class TodoListState extends State<TodoList> {
     );
   }
 
+  Widget _createCategoryDropDownList(List<Category> categories) {
+    return new Theme(
+        data: Theme.of(context).copyWith(
+            canvasColor: Theme.of(context).primaryColor,
+        ), child: new DropdownButtonHideUnderline(
+        child: new DropdownButton(
+            value: _category ?? (categories.length > 0 ? categories[0] : null),
+            items: _createCatergoryDropDownMenuItems(categories),
+            isDense: true,
+            onChanged: (value) {
+              setState(() => _category = value);
+            })));
+  }
+
+  List<DropdownMenuItem<Category>> _createCatergoryDropDownMenuItems(List<Category> categories) {
+    List<DropdownMenuItem<Category>> menuItems = categories.map((category){
+        return new DropdownMenuItem(value:category,
+            child: new Text(category.name,
+              style: const TextStyle(color: Colors.white,fontSize: 18.0)));
+      }).toList();
+      return menuItems;
+  }
+
   Future<bool> _showSnackbarOnClose() async {
     key.currentState.hideCurrentSnackBar();
     if (_isToClose) {
@@ -325,10 +362,13 @@ class TodoListState extends State<TodoList> {
 
   List<dynamic> _getSortedTodoList(List<Todo> todoList) {
     List<dynamic> items = [];
-    _getDateList(todoList).forEach((date) {
-      items.add(new Header(date: date));
-      items.addAll(todoList.where((todo) => todo.date == date).toList());
-    });
+    List<String> dateList = _getDateList(todoList);
+    if (dateList.isNotEmpty) {
+        dateList.forEach((date) {
+          items.add(new Header(date: date));
+          items.addAll(todoList.where((todo) => todo.date == date).toList());
+        });
+    }
     return items;
   }
 }

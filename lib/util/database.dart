@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/util/category_provider.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -24,14 +23,16 @@ class DatabaseHelper {
       Todo.columnDone +
       ' INTEGER,' +
       Todo.columnDate +
-      ' TEXT )';
+      ' TEXT,'+
+      Todo.columnCategoryId +
+      ' INTEGER )';
   final String _createCategoryTable = 'CREATE TABLE ' +
       Category.tableName +
       '(' +
       Category.columnId +
       ' INTEGER PRIMARY KEY AUTOINCREMENT,' +
       Category.columnName +
-      ' TEXT,';
+      ' TEXT )';
 
   factory DatabaseHelper() {
     return _databaseHelper;
@@ -39,7 +40,7 @@ class DatabaseHelper {
 
   Future<Database> getDatabase() async {
     if (_database == null)
-      return _database = await _openDatabse(await _initDb());
+      return _database = await _openDatabase(await _initDb());
     return _database;
   }
 
@@ -61,18 +62,16 @@ class DatabaseHelper {
     return path;
   }
 
-  Future<Database> _openDatabse(String path) async {
-    Database database = await openDatabase(path, version: 1,
+  Future<Database> _openDatabase(String path) async {
+    return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       //When creating the db, create the table
       await db.execute(_createTableTodo);
       await db.execute(_createCategoryTable);
-      CategoryProvider provider = new CategoryProvider();
       ['Default', 'Personal', 'Shopping', 'Wishlist', 'Work'].forEach((categoryName) async{
-        await provider.insert(new Category(name: categoryName));
+          await db.insert(Category.tableName, new Category(name: categoryName).toMap());
       });
     });
-    return database;
   }
 
   Future closedatabase() async {
