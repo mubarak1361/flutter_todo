@@ -67,6 +67,7 @@ class NewTodoState extends State<NewTodo> {
     super.initState();
     new CategoryProvider().getAllCategory().then((categories){
       setState(() {
+        if(_isExistRecord())
         _category = categories.firstWhere((category)=> category.id == widget.todo.categoryId);
         _categoryList = categories;
       });

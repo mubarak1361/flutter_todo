@@ -292,14 +292,21 @@ class TodoListState extends State<TodoList> {
   Widget _createCategoryDropDownList(List<Category> categories) {
     return new Theme(
         data: Theme.of(context).copyWith(
-            canvasColor: Theme.of(context).primaryColor,
+          canvasColor: Theme
+              .of(context)
+              .primaryColor,
         ), child: new DropdownButtonHideUnderline(
         child: new DropdownButton(
             value: _category ?? (categories.length > 0 ? categories[0] : null),
             items: _createCatergoryDropDownMenuItems(categories),
             isDense: true,
             onChanged: (value) {
-              setState(() => _category = value);
+              _filterByCategory(value.id).then((list) {
+                setState(() {
+                  _category = value;
+                  _todoList = list;
+                });
+              });
             })));
   }
 
@@ -352,9 +359,23 @@ class TodoListState extends State<TodoList> {
     return _getSortedTodoList(allTodo);
   }
 
+  Future<List<dynamic>> _filterByCategory(int categoryId) async {
+       return await _todoProvider.getAllTodo().then((todoList) {
+          switch(categoryId){
+            case -1:
+              return _getSortedTodoList(todoList);
+            case -2:
+              return _getSortedTodoList(todoList.where((todo) => todo.done).toList());
+            default:
+             return _getSortedTodoList(todoList.where((todo) => todo.categoryId == categoryId).toList());
+        }
+    });
+
+  }
+
   List<String> _getDateList(List<Todo> todoList) {
-    List<String> dates = todoList.map((todo) => todo.date).toSet().toList();
-    dates.sort((date1, date2) {
+    List<String> dates = todoList?.map((todo) => todo.date).toSet().toList();
+    dates?.sort((date1, date2) {
       return formatter.parse(date1).isAfter(formatter.parse(date2)) ? 1 : 0;
     });
     return dates;
@@ -363,12 +384,10 @@ class TodoListState extends State<TodoList> {
   List<dynamic> _getSortedTodoList(List<Todo> todoList) {
     List<dynamic> items = [];
     List<String> dateList = _getDateList(todoList);
-    if (dateList.isNotEmpty) {
-        dateList.forEach((date) {
+        dateList?.forEach((date) {
           items.add(new Header(date: date));
           items.addAll(todoList.where((todo) => todo.date == date).toList());
         });
-    }
     return items;
   }
 }
