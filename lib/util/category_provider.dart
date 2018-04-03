@@ -14,21 +14,21 @@ class CategoryProvider{
     return _todoProvider;
   }
 
-  Future<Database> _open() async => await new DatabaseHelper().getDatabase();
+  Future<Database> _open() => new DatabaseHelper().getDatabase();
 
-  Future _close() async => await new DatabaseHelper().closedatabase();
+  Future _close() => new DatabaseHelper().closedatabase();
 
   Future<Category> insert(Category category) async {
     await _open()
-        .then((database) async =>
-    await database.insert(Category.tableName, category.toMap()))
-        .then((id) => category.id = id).whenComplete(() async => await _close());
+        .then((database) =>
+        database.insert(Category.tableName, category.toMap()))
+        .then((id) => category.id = id).whenComplete(() async => _close());
     return category;
   }
 
-  Future<List<Category>> getAllCategory() async {
+  Future<List<Category>> getAllCategory() {
     return _open()
-        .then((database) async => await database.query(Category.tableName,
+        .then((database) => database.query(Category.tableName,
         orderBy: '${Category.columnId} ASC'))
         .then((maps) {
       if (maps.length > 0) {
@@ -38,8 +38,7 @@ class CategoryProvider{
         });
         return categoryList;
       }
-    }).whenComplete(() async => _close());
+    }).whenComplete(() => _close());
   }
-
 
 }

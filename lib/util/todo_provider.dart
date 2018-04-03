@@ -13,33 +13,33 @@ class TodoProvider {
     return _todoProvider;
   }
 
-  Future<Database> _open() async => await new DatabaseHelper().getDatabase();
+  Future<Database> _open() => new DatabaseHelper().getDatabase();
 
   Future<Todo> insert(Todo todo) async {
     await _open()
-        .then((database) async =>
-    await database.insert(Todo.tableName, todo.toMap()))
-        .then((id) => todo.id = id).whenComplete(() async => await _close());
+        .then((database) =>
+     database.insert(Todo.tableName, todo.toMap()))
+        .then((id) => todo.id = id).whenComplete(() =>  _close());
     return todo;
   }
 
-  Future<int> delete(int id) async {
-    return await _open().then((database) async {
-      return await database.delete(Todo.tableName,
+  Future<int> delete(int id) {
+    return _open().then((database) {
+      return database.delete(Todo.tableName,
           where: '${Todo.columnId} = ?', whereArgs: [id]);
-    }).whenComplete(() async => await _close());
+    }).whenComplete(() => _close());
   }
 
-  Future<int> update(Todo todo) async {
-    return await _open().then((database) async {
-      return await database.update(Todo.tableName, todo.toMap(),
+  Future<int> update(Todo todo) {
+    return _open().then((database) {
+      return database.update(Todo.tableName, todo.toMap(),
           where: '${Todo.columnId} = ?', whereArgs: [todo.id]);
-    }).whenComplete(() async => _close());
+    }).whenComplete(() => _close());
   }
 
-  Future<Todo> getTodo(int id) async {
-    return await _open().then((database) async {
-      return await database.query(Todo.tableName,
+  Future<Todo> getTodo(int id) {
+    return _open().then((database) {
+      return database.query(Todo.tableName,
           columns: [
             Todo.columnId,
             Todo.columnNote,
@@ -52,12 +52,12 @@ class TodoProvider {
       if (maps.length > 0) {
         return new Todo.fromMap(maps.first);
       }
-    }).whenComplete(() async => _close());
+    }).whenComplete(() => _close());
   }
 
-  Future<List<Todo>> getAllTodo() async {
-    return await _open()
-        .then((database) async => await database.query(Todo.tableName,
+  Future<List<Todo>> getAllTodo() {
+    return _open()
+        .then((database) => database.query(Todo.tableName,
             orderBy: '${Todo.columnId} DESC'))
         .then((maps) {
       if (maps.length > 0) {
@@ -67,8 +67,8 @@ class TodoProvider {
         });
         return todoList;
       }
-    }).whenComplete(() async => _close());
+    }).whenComplete(() => _close());
   }
 
-  Future _close() async => await new DatabaseHelper().closedatabase();
+  Future _close() => new DatabaseHelper().closedatabase();
 }

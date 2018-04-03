@@ -63,7 +63,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _openDatabase(String path) async {
-    return await openDatabase(path, version: 1,
+    return openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       //When creating the db, create the table
       await db.execute(_createTableTodo);

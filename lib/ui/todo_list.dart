@@ -345,18 +345,13 @@ class TodoListState extends State<TodoList> {
   }
 
   Future<List<dynamic>> _searchTodo(String value) async {
-    List<Todo> allTodo = [];
-    await _todoProvider.getAllTodo().then((todoList) {
+    return _todoProvider.getAllTodo().then((todoList) {
       if (value.isNotEmpty) {
-        allTodo = todoList
-            .where(
-                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+       return _getSortedTodoList(todoList.where((todo) => todo.note.toLowerCase().contains(value.toLowerCase())).toList());
       } else {
-        allTodo = todoList;
+        return _getSortedTodoList(todoList);
       }
     });
-    return _getSortedTodoList(allTodo);
   }
 
   Future<List<dynamic>> _filterByCategory(int categoryId) async {
