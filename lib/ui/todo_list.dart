@@ -33,7 +33,7 @@ class TodoListState extends State<TodoList> {
     super.initState();
     _todoProvider = new TodoProvider();
     _categoryProvider = new CategoryProvider();
-    _getCatergoyList().whenComplete(() => _getTodoList());
+    _getCategoryList().whenComplete(() => _getTodoList());
   }
 
   @override
@@ -49,7 +49,7 @@ class TodoListState extends State<TodoList> {
     });
   }
 
-  Future _getCatergoyList() async {
+  Future _getCategoryList() async {
      return _categoryProvider.getAllCategory().then((categories){
         categories.insert(0, new Category(id: -1,name: 'All Lists'));
         categories.insert(categories.length, new Category(id: -2,name: 'Finished'));
@@ -140,7 +140,16 @@ class TodoListState extends State<TodoList> {
   _dismissListItem(Todo todo) async {
     await _todoProvider.delete(todo.id);
     _todoList.remove(todo);
+    _getCategoryTodo();
     _showSnackbar(todo);
+  }
+
+  void _getCategoryTodo(){
+    _filterByCategory(_category?.id??-1).then((list) {
+      setState(() {
+        this._todoList = list;
+      });
+    });
   }
 
   Widget _createListItemContent(Todo todo) {
@@ -199,7 +208,7 @@ class TodoListState extends State<TodoList> {
 
   _undoTodo(Todo todo) async {
     await _todoProvider.insert(todo);
-    _getTodoList();
+    _getCategoryTodo();
     key.currentState.hideCurrentSnackBar();
   }
 
@@ -369,7 +378,7 @@ class TodoListState extends State<TodoList> {
   }
 
   List<String> _getDateList(List<Todo> todoList) {
-    List<String> dates = todoList?.map((todo) => todo.date).toSet().toList();
+    List<String> dates = todoList?.map((todo) => todo.date)?.toSet()?.toList();
     dates?.sort((date1, date2) {
       return formatter.parse(date1).isAfter(formatter.parse(date2)) ? 1 : 0;
     });
