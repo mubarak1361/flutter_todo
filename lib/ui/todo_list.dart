@@ -33,20 +33,12 @@ class TodoListState extends State<TodoList> {
     super.initState();
     _todoProvider = new TodoProvider();
     _categoryProvider = new CategoryProvider();
-    _getCategoryList().whenComplete(() => _getTodoList());
+    _getCategoryList().whenComplete(() => _getCategoryTodo());
   }
 
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future _getTodoList() async {
-     return _todoProvider.getAllTodo().then((todoList) {
-      setState(() {
-        if (todoList != null) this._todoList = _getSortedTodoList(todoList);
-      });
-    });
   }
 
   Future _getCategoryList() async {
@@ -115,7 +107,7 @@ class TodoListState extends State<TodoList> {
         .push(new CupertinoPageRoute(builder: (buildContext) {
       return new NewTodo(todo: todo);
     }));
-    _getTodoList();
+    _getCategoryTodo();
   }
 
   Widget _createListItem(Todo todo) {
@@ -147,7 +139,7 @@ class TodoListState extends State<TodoList> {
   void _getCategoryTodo(){
     _filterByCategory(_category?.id??-1).then((list) {
       setState(() {
-        this._todoList = list;
+        this._todoList = _getSortedTodoList(list)??[];
       });
     });
   }
@@ -313,7 +305,7 @@ class TodoListState extends State<TodoList> {
               _filterByCategory(value.id).then((list) {
                 setState(() {
                   _category = value;
-                  _todoList = list;
+                  _todoList = _getSortedTodoList(list);
                 });
               });
             })));
@@ -354,7 +346,7 @@ class TodoListState extends State<TodoList> {
   }
 
   Future<List<dynamic>> _searchTodo(String value) async {
-    return _todoProvider.getAllTodo().then((todoList) {
+    return _filterByCategory(_category?.id??-1).then((todoList) {
       if (value.isNotEmpty) {
        return _getSortedTodoList(todoList.where((todo) => todo.note.toLowerCase().contains(value.toLowerCase())).toList());
       } else {
@@ -363,15 +355,15 @@ class TodoListState extends State<TodoList> {
     });
   }
 
-  Future<List<dynamic>> _filterByCategory(int categoryId) async {
-       return await _todoProvider.getAllTodo().then((todoList) {
+  Future<List<Todo>> _filterByCategory(int categoryId) async {
+       return _todoProvider.getAllTodo().then((todoList) {
           switch(categoryId){
             case -1:
-              return _getSortedTodoList(todoList);
+              return todoList;
             case -2:
-              return _getSortedTodoList(todoList.where((todo) => todo.done).toList());
+              return todoList.where((todo) => todo.done).toList();
             default:
-             return _getSortedTodoList(todoList.where((todo) => todo.categoryId == categoryId).toList());
+             return todoList.where((todo) => todo.categoryId == categoryId).toList();
         }
     });
 
