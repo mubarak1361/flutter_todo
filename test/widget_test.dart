@@ -5,8 +5,8 @@
 // are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_todo/db/todo_provider.dart';
 import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/util/todo_provider.dart';
 
 void main() {
   testWidgets('Todo insert smoke test', (WidgetTester tester) async {

@@ -40,5 +40,4 @@ class Todo implements Item {
   ViewType getViewType() {
     return ViewType.TODO;
   }
-
 }

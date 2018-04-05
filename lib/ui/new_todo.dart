@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/db/category_provider.dart';
+import 'package:flutter_todo/db/todo_provider.dart';
 import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/util/category_provider.dart';
 import 'package:flutter_todo/util/constants.dart';
-import 'package:flutter_todo/util/todo_provider.dart';
 import 'package:intl/intl.dart';
 
 class NewTodo extends StatefulWidget {
@@ -65,10 +65,11 @@ class NewTodoState extends State<NewTodo> {
   @override
   void initState() {
     super.initState();
-    new CategoryProvider().getAllCategory().then((categories){
+    new CategoryProvider().getAllCategory().then((categories) {
       setState(() {
-        if(_isExistRecord())
-        _category = categories.firstWhere((category)=> category.id == widget.todo.categoryId);
+        if (_isExistRecord())
+          _category = categories
+              .firstWhere((category) => category.id == widget.todo.categoryId);
         _categoryList = categories;
       });
     });
@@ -93,7 +94,12 @@ class NewTodoState extends State<NewTodo> {
             onWillPop: _warnUserWithoutSaving,
             key: _formKey,
             child: new Column(
-              children: <Widget>[_createDatePicker(), _createNote(),_createCategoryDropDownList(_categoryList)],
+              children: <Widget>[
+                _createDatePicker(),
+                _createNote(),
+                _categoryList.isNotEmpty?
+                _createCategoryDropDownList(_categoryList):new Container()
+              ],
             ),
           )),
     );
@@ -133,29 +139,34 @@ class NewTodoState extends State<NewTodo> {
         children: <Widget>[
           new Icon(
             Icons.list,
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
           ),
           new Padding(
-              padding: new EdgeInsets.symmetric(horizontal: 18.0, vertical: 16.0),
-              child: new DropdownButtonHideUnderline(child: new DropdownButton(
-                  value: _category ??
-                      (categories.length > 0 ? _category = categories[0] : null),
-                  items: _createCategoryDropDownMenuItems(categories),
-                  isDense: true,
-                  onChanged: (value) {
-                    setState(() => _category = value);
-                  }),)
-          )
+              padding:
+                  new EdgeInsets.symmetric(horizontal: 18.0, vertical: 16.0),
+              child: new DropdownButtonHideUnderline(
+                child: new DropdownButton(
+                    value: _category ??
+                        (categories.length > 0
+                            ? _category = categories[0]
+                            : null),
+                    items: _createCategoryDropDownMenuItems(categories),
+                    isDense: true,
+                    onChanged: (value) {
+                      setState(() => _category = value);
+                    }),
+              ))
         ]);
   }
 
-  List<DropdownMenuItem<Category>> _createCategoryDropDownMenuItems(List<Category> categories) {
-    List<DropdownMenuItem<Category>> menuItems = categories.map((category){
-      return new DropdownMenuItem(value:category,
+  List<DropdownMenuItem<Category>> _createCategoryDropDownMenuItems(
+      List<Category> categories) {
+    List<DropdownMenuItem<Category>> menuItems = categories.map((category) {
+      return new DropdownMenuItem(
+          value: category,
           child: new Text(category.name,
-              style: new TextStyle(color: Theme.of(context).primaryColor,fontSize: 16.0)));
+              style: new TextStyle(
+                  color: Theme.of(context).primaryColor, fontSize: 16.0)));
     }).toList();
     return menuItems;
   }

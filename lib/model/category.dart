@@ -9,7 +9,7 @@ class Category {
   int id;
   String name;
 
-  Category({this.id,@required this.name});
+  Category({this.id, @required this.name});
 
   Map toMap() {
     Map map = {columnName: name};

@@ -23,7 +23,7 @@ class DatabaseHelper {
       Todo.columnDone +
       ' INTEGER,' +
       Todo.columnDate +
-      ' TEXT,'+
+      ' TEXT,' +
       Todo.columnCategoryId +
       ' INTEGER )';
   final String _createCategoryTable = 'CREATE TABLE ' +
@@ -68,13 +68,15 @@ class DatabaseHelper {
       //When creating the db, create the table
       await db.execute(_createTableTodo);
       await db.execute(_createCategoryTable);
-      ['Default', 'Personal', 'Shopping', 'Wishlist', 'Work'].forEach((categoryName) async{
-          await db.insert(Category.tableName, new Category(name: categoryName).toMap());
+      ['Default', 'Personal', 'Shopping', 'Wishlist', 'Work']
+          .forEach((categoryName) async {
+        await db.insert(
+            Category.tableName, new Category(name: categoryName).toMap());
       });
     });
   }
 
-  Future closedatabase() async {
+  Future closeDatabase() async {
     if (_database != null) {
       await _database.close();
       _database = null;

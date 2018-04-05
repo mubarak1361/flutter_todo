@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_todo/model/todo.dart';
-import 'package:flutter_todo/util/database.dart';
+import 'package:flutter_todo/db/database.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TodoProvider {
@@ -17,9 +17,9 @@ class TodoProvider {
 
   Future<Todo> insert(Todo todo) async {
     await _open()
-        .then((database) =>
-     database.insert(Todo.tableName, todo.toMap()))
-        .then((id) => todo.id = id).whenComplete(() =>  _close());
+        .then((database) => database.insert(Todo.tableName, todo.toMap()))
+        .then((id) => todo.id = id)
+        .whenComplete(() => _close());
     return todo;
   }
 
@@ -57,8 +57,8 @@ class TodoProvider {
 
   Future<List<Todo>> getAllTodo() {
     return _open()
-        .then((database) => database.query(Todo.tableName,
-            orderBy: '${Todo.columnId} DESC'))
+        .then((database) =>
+            database.query(Todo.tableName, orderBy: '${Todo.columnId} DESC'))
         .then((maps) {
       if (maps.length > 0) {
         List<Todo> todoList = [];
@@ -70,5 +70,5 @@ class TodoProvider {
     }).whenComplete(() => _close());
   }
 
-  Future _close() => new DatabaseHelper().closedatabase();
+  Future _close() => new DatabaseHelper().closeDatabase();
 }
