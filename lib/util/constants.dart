@@ -1,4 +1,4 @@
 class Constants {
-  static String get titleNew => 'New Todo';
-  static String get titleEdit => 'Edit Todo';
+  static const String titleNew = 'New Todo';
+  static const String titleEdit = 'Edit Todo';
 }

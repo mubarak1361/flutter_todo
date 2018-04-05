@@ -68,7 +68,7 @@ class DatabaseHelper {
       //When creating the db, create the table
       await db.execute(_createTableTodo);
       await db.execute(_createCategoryTable);
-      ['Default', 'Personal', 'Shopping', 'Wishlist', 'Work']
+      [Category.deFault, Category.personal, Category.shopping, Category.wishList, Category.work]
           .forEach((categoryName) async {
         await db.insert(
             Category.tableName, new Category(name: categoryName).toMap());

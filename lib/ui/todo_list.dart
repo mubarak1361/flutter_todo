@@ -44,9 +44,9 @@ class TodoListState extends State<TodoList> {
 
   Future _getCategoryList() async {
     return _categoryProvider.getAllCategory().then((categories) {
-      categories.insert(0, new Category(id: -1, name: 'All Lists'));
+      categories.insert(0, new Category(id: -1, name: Category.allLists));
       categories.insert(
-          categories.length, new Category(id: -2, name: 'Finished'));
+          categories.length, new Category(id: -2, name: Category.finished));
       setState(() => _categoryList = categories);
     });
   }
@@ -74,7 +74,7 @@ class TodoListState extends State<TodoList> {
           return _createItemByViewType(_todoList[index]);
         },
         itemCount: _todoList.length,
-        padding: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.only(bottom: 8.0,right: 4.0,left: 4.0),
       ),
     );
   }
@@ -320,8 +320,14 @@ class TodoListState extends State<TodoList> {
     List<DropdownMenuItem<Category>> menuItems = categories.map((category) {
       return new DropdownMenuItem(
           value: category,
-          child: new Text(category.name,
-              style: const TextStyle(color: Colors.white, fontSize: 18.0)));
+          child: new Row(
+            children: <Widget>[
+          new Icon(category.getIcon(),color: Colors.white,size: 14.0),
+          new Padding(padding: new EdgeInsets.only(left: 6.0),
+            child: new Text(category.name,
+                style: const TextStyle(color: Colors.white, fontSize: 18.0)))
+            ],
+          ));
     }).toList();
     return menuItems;
   }

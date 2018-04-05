@@ -2,13 +2,13 @@ import 'package:flutter_todo/model/item.dart';
 import 'package:flutter_todo/model/view_type.dart';
 
 class Todo implements Item {
-  static String get tableName => 'todo';
+  static const String tableName = 'todo';
 
-  static String get columnId => 'id';
-  static String get columnNote => 'note';
-  static String get columnDone => 'done';
-  static String get columnDate => 'date';
-  static String get columnCategoryId => 'category_id';
+  static const String columnId = 'id';
+  static const String columnNote = 'note';
+  static const String columnDone = 'done';
+  static const String columnDate = 'date';
+  static const String columnCategoryId = 'category_id';
 
   int id;
   String note;
@@ -40,4 +40,5 @@ class Todo implements Item {
   ViewType getViewType() {
     return ViewType.TODO;
   }
+
 }
