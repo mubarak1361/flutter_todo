@@ -25,9 +25,10 @@ class TodoListState extends State<TodoList> {
   CategoryProvider _categoryProvider;
   bool _isToClose = false;
   final GlobalKey<ScaffoldState> key = new GlobalKey<ScaffoldState>();
-  bool _isSearchOpen = false;
+  bool _isSearchBarViewOpen = false;
   List<Category> _categoryList = [];
   Category _category;
+  bool _initalState = true;
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class TodoListState extends State<TodoList> {
         new IconButton(
             icon: new Icon(Icons.search),
             onPressed: () {
-              setState(() => _isSearchOpen = true);
+              setState(() => _isSearchBarViewOpen = true);
             })
       ],
     );
@@ -223,11 +224,39 @@ class TodoListState extends State<TodoList> {
   Widget _createBody() {
     return new Column(
       children: <Widget>[
-        _isSearchOpen ? _createStatusBar() : new Container(),
-        _isSearchOpen ? _createSearchBar() : _createAppBar(),
-        new Expanded(child: _createListView())
+        _isSearchBarViewOpen ? _createStatusBar() : new Container(),
+        _isSearchBarViewOpen ? _createSearchBar() : _createAppBar(),
+        new Expanded(child: _todoList.isNotEmpty ? _createListView() : _buildNoTodoView())
       ],
     );
+  }
+
+  Center _buildNoTodoView(){
+    return new Center(
+      child: new Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _initalState?_buildLoader():_buildNoToDoViewItem()
+      ),
+    );
+  }
+
+  List<Widget>  _buildLoader(){
+    _initalState = false;
+    return <Widget>[new CircularProgressIndicator()];
+  }
+
+  List<Widget> _buildNoToDoViewItem() {
+    return <Widget>[
+      new Icon(Icons.list,
+          size: 80.0,
+          color: Colors.grey.withOpacity(0.4)),
+      new Text('No To Do',
+          style: new TextStyle(
+              color: Colors.grey.withOpacity(0.7),
+              fontSize: 16.0))
+    ];
   }
 
   Widget _createStatusBar() {
@@ -280,7 +309,7 @@ class TodoListState extends State<TodoList> {
               ),
               onPressed: () {
                 setState(() {
-                  _isSearchOpen = false;
+                  _isSearchBarViewOpen = false;
                   _searchTodo('').then((todoList) {
                     setState(() => this._todoList = todoList);
                   });
@@ -360,10 +389,8 @@ class TodoListState extends State<TodoList> {
   Future<List<Item>> _searchTodo(String value) async {
     return _filterByCategory(_category?.id ?? -1).then((todoList) {
       if (value.isNotEmpty) {
-        return _getSortedTodoList(todoList
-            .where(
-                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))
-            .toList());
+        return _getSortedTodoList(todoList?.where(
+                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))?.toList());
       } else {
         return _getSortedTodoList(todoList);
       }
@@ -397,7 +424,7 @@ class TodoListState extends State<TodoList> {
     List<String> dateList = _getDateList(todoList);
     dateList?.forEach((date) {
       items.add(new Header(date: date));
-      items.addAll(todoList.where((todo) => todo.date == date).toList());
+      items.addAll(todoList?.where((todo) => todo.date == date)?.toList());
     });
     return items;
   }
