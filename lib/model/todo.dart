@@ -19,13 +19,12 @@ class Todo implements Item {
   Todo({this.note, this.done = false, this.date});
 
   Map toMap() {
-    Map map = {
+    return <String,dynamic>{
       columnNote: note,
       columnDone: done == true ? 1 : 0,
       columnDate: date,
       columnCategoryId: categoryId
     };
-    return map;
   }
 
   Todo.fromMap(Map map) {

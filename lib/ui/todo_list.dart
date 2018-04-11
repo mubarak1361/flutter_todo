@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_todo/db/category_provider.dart';
+import 'package:flutter_todo/db/todo_provider.dart';
 import 'package:flutter_todo/model/category.dart';
 import 'package:flutter_todo/model/header.dart';
 import 'package:flutter_todo/model/item.dart';
 import 'package:flutter_todo/model/todo.dart';
 import 'package:flutter_todo/model/view_type.dart';
 import 'package:flutter_todo/ui/new_todo.dart';
-import 'package:flutter_todo/db/category_provider.dart';
-import 'package:flutter_todo/db/todo_provider.dart';
 import 'package:intl/intl.dart';
 
 class TodoList extends StatefulWidget {
@@ -55,8 +55,9 @@ class TodoListState extends State<TodoList> {
   Widget _createAppBar() {
     return new AppBar(
       leading: const Icon(Icons.beenhere),
-      title: _categoryList.isNotEmpty ?_createCategoryDropDownList(
-          _categoryList):new Container(), //const Text('To Do List'),
+      title: _categoryList.isNotEmpty
+          ? _createCategoryDropDownList(_categoryList)
+          : new Container(), //const Text('To Do List'),
       actions: <Widget>[
         new IconButton(
             icon: new Icon(Icons.search),
@@ -75,7 +76,7 @@ class TodoListState extends State<TodoList> {
           return _createItemByViewType(_todoList[index]);
         },
         itemCount: _todoList.length,
-        padding: const EdgeInsets.only(bottom: 8.0,right: 4.0,left: 4.0),
+        padding: const EdgeInsets.only(bottom: 8.0, right: 4.0, left: 4.0),
       ),
     );
   }
@@ -197,7 +198,9 @@ class TodoListState extends State<TodoList> {
   }
 
   _openEditTodo(Todo todo) async {
-   await Navigator.of(context).push(new CupertinoPageRoute(builder: (buildContext) {
+    await Navigator
+        .of(context)
+        .push(new CupertinoPageRoute(builder: (buildContext) {
       return new NewTodo(todo: todo);
     }));
     _getCategoryTodo();
@@ -226,36 +229,34 @@ class TodoListState extends State<TodoList> {
       children: <Widget>[
         _isSearchBarViewOpen ? _createStatusBar() : new Container(),
         _isSearchBarViewOpen ? _createSearchBar() : _createAppBar(),
-        new Expanded(child: _todoList.isNotEmpty ? _createListView() : _buildNoTodoView())
+        new Expanded(
+            child:
+                _todoList.isNotEmpty ? _createListView() : _buildNoTodoView())
       ],
     );
   }
 
-  Center _buildNoTodoView(){
+  Center _buildNoTodoView() {
     return new Center(
       child: new Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _initalState?_buildLoader():_buildNoToDoViewItem()
-      ),
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: _initalState ? _buildLoader() : _buildNoToDoViewItem()),
     );
   }
 
-  List<Widget>  _buildLoader(){
+  List<Widget> _buildLoader() {
     _initalState = false;
     return <Widget>[new CircularProgressIndicator()];
   }
 
   List<Widget> _buildNoToDoViewItem() {
     return <Widget>[
-      new Icon(Icons.list,
-          size: 80.0,
-          color: Colors.grey.withOpacity(0.4)),
+      new Icon(Icons.list, size: 80.0, color: Colors.grey.withOpacity(0.4)),
       new Text('No To Do',
           style: new TextStyle(
-              color: Colors.grey.withOpacity(0.7),
-              fontSize: 16.0))
+              color: Colors.grey.withOpacity(0.7), fontSize: 16.0))
     ];
   }
 
@@ -351,10 +352,12 @@ class TodoListState extends State<TodoList> {
           value: category,
           child: new Row(
             children: <Widget>[
-          new Icon(category.getIcon(),color: Colors.white,size: 14.0),
-          new Padding(padding: new EdgeInsets.only(left: 6.0),
-            child: new Text(category.name,
-                style: const TextStyle(color: Colors.white, fontSize: 18.0)))
+              new Icon(category.getIcon(), color: Colors.white, size: 14.0),
+              new Padding(
+                  padding: new EdgeInsets.only(left: 6.0),
+                  child: new Text(category.name,
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 18.0)))
             ],
           ));
     }).toList();
@@ -389,8 +392,10 @@ class TodoListState extends State<TodoList> {
   Future<List<Item>> _searchTodo(String value) async {
     return _filterByCategory(_category?.id ?? -1).then((todoList) {
       if (value.isNotEmpty) {
-        return _getSortedTodoList(todoList?.where(
-                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))?.toList());
+        return _getSortedTodoList(todoList
+            ?.where(
+                (todo) => todo.note.toLowerCase().contains(value.toLowerCase()))
+            ?.toList());
       } else {
         return _getSortedTodoList(todoList);
       }
@@ -405,7 +410,8 @@ class TodoListState extends State<TodoList> {
         case -2:
           return todoList?.where((todo) => todo.done)?.toList();
         default:
-          return todoList?.where((todo) => todo.categoryId == categoryId)
+          return todoList
+              ?.where((todo) => todo.categoryId == categoryId)
               ?.toList();
       }
     });

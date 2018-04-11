@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Category {
-  static const String tableName = 'category';
+  static final String tableName = 'category';
 
-  static const String columnId = 'id';
-  static const String columnName = 'name';
+  static final String columnId = 'id';
+  static final String columnName = 'name';
 
   static const String allLists = 'All Lists';
   static const String deFault = 'Default';
@@ -22,8 +22,7 @@ class Category {
   Category({this.id, @required this.name});
 
   Map toMap() {
-    Map map = {columnName: name};
-    return map;
+    return <String, dynamic>{columnName: name};
   }
 
   Category.fromMap(Map map) {
@@ -44,8 +43,7 @@ class Category {
       case finished:
         return Icons.check;
       default:
-        return FontAwesomeIcons.list;;
+        return FontAwesomeIcons.list;
     }
   }
-
 }
