@@ -15,10 +15,10 @@ import 'package:intl/intl.dart';
 
 class TodoList extends StatefulWidget {
   @override
-  TodoListState createState() => new TodoListState();
+  _TodoListState createState() => new _TodoListState();
 }
 
-class TodoListState extends State<TodoList> {
+class _TodoListState extends State<TodoList> {
   final DateFormat formatter = new DateFormat.yMMMMd("en_US");
   List<Item> _todoList = [];
   TodoProvider _todoProvider;
@@ -138,7 +138,7 @@ class TodoListState extends State<TodoList> {
     await _todoProvider.delete(todo.id);
     _todoList.remove(todo);
     _getCategoryTodo();
-    _showSnackbar(todo);
+    _showSnackBar(todo);
   }
 
   void _getCategoryTodo() {
@@ -181,7 +181,7 @@ class TodoListState extends State<TodoList> {
     ));
   }
 
-  _showSnackbar(Todo todo) {
+  _showSnackBar(Todo todo) {
     key.currentState.hideCurrentSnackBar();
     key.currentState.showSnackBar(
       new SnackBar(
@@ -243,6 +243,26 @@ class TodoListState extends State<TodoList> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: _initalState ? _buildLoader() : _buildNoToDoViewItem()),
+    );
+  }
+
+  FutureBuilder<List<Item>> _buildBody(){
+    return new FutureBuilder<List<Item>>(
+      future: null ,
+      builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
+        switch(snapshot.connectionState){
+          case ConnectionState.none:
+            return null;
+          case ConnectionState.waiting:
+            return null;
+          default:
+            if(snapshot.data.isNotEmpty){
+
+            }else{
+
+            }
+        }
+      },
     );
   }
 

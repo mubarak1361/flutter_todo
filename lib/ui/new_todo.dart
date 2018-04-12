@@ -20,22 +20,22 @@ class NewTodo extends StatefulWidget {
   }
 
   @override
-  NewTodoState createState() => new NewTodoState();
+  _NewTodoState createState() => new _NewTodoState();
 }
 
-class NewTodoState extends State<NewTodo> {
+class _NewTodoState extends State<NewTodo> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   List<Category> _categoryList = [];
   Category _category;
 
-  Widget _createAppBar() {
+  AppBar _createAppBar() {
     return new AppBar(
       title: new Text(_getTitle()),
       actions: <Widget>[_createSaveUpdateAction()],
     );
   }
 
-  Widget _createSaveUpdateAction() {
+  IconButton _createSaveUpdateAction() {
     return new IconButton(
       onPressed: () {
         _saveTodo();
@@ -105,7 +105,7 @@ class NewTodoState extends State<NewTodo> {
     );
   }
 
-  Widget _createDatePicker() {
+  Row _createDatePicker() {
     return new Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -131,7 +131,7 @@ class NewTodoState extends State<NewTodo> {
     );
   }
 
-  Widget _createCategoryDropDownList(List<Category> categories) {
+  Row _createCategoryDropDownList(List<Category> categories) {
     return new Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -159,16 +159,14 @@ class NewTodoState extends State<NewTodo> {
         ]);
   }
 
-  List<DropdownMenuItem<Category>> _createCategoryDropDownMenuItems(
-      List<Category> categories) {
-    List<DropdownMenuItem<Category>> menuItems = categories.map((category) {
+  List<DropdownMenuItem<Category>> _createCategoryDropDownMenuItems(List<Category> categories) {
+    return categories.map((category) {
       return new DropdownMenuItem(
           value: category,
           child: new Text(category.name,
               style: new TextStyle(
                   color: Theme.of(context).primaryColor, fontSize: 16.0)));
     }).toList();
-    return menuItems;
   }
 
   _pickDateFromDatePicker() async {
@@ -220,7 +218,7 @@ class NewTodoState extends State<NewTodo> {
     }
   }
 
-  Widget _createNote() {
+  TextFormField _createNote() {
     return new TextFormField(
       textAlign: TextAlign.justify,
       maxLines: 3,
