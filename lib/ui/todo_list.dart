@@ -20,7 +20,7 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   final DateFormat formatter = new DateFormat.yMMMMd("en_US");
-  List<Item> _todoList ;
+  List<Item> _todoList = [];
   TodoProvider _todoProvider;
   CategoryProvider _categoryProvider;
   bool _isToClose = false;
