@@ -12,6 +12,7 @@ dependencies:
   path_provider: '>=0.3.0'
   intl: "^0.15.4"
   font_awesome_flutter: 6.0.0
+  sentry: any
 
 dev_dependencies:
   flutter_test:
