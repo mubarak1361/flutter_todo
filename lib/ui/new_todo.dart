@@ -194,7 +194,7 @@ class _NewTodoState extends State<NewTodo> {
     } else {
       return await showDialog<bool>(
             context: context,
-            child: new AlertDialog(
+            builder: (buildContext) => AlertDialog(
               title: const Text('Discard To do'),
               content:
                   const Text('Do you want close without saving to do note?'),

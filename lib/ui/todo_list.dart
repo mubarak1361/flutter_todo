@@ -354,6 +354,7 @@ class _TodoListState extends State<TodoList> {
                 value:
                     _category ?? (categories.length > 0 ? categories[0] : null),
                 items: _createCatergoryDropDownMenuItems(categories),
+                iconEnabledColor: Colors.white,
                 isDense: true,
                 onChanged: (value) {
                   _filterByCategory(value.id).then((list) {
