@@ -7,8 +7,7 @@ import 'package:sentry/sentry.dart';
 
 Future<void> main() async {
   await Sentry.init(
-      (options) => options.dsn =
-          'https://1180c9dd4e564620882fd3c926dc9a54:a229087c7ddf49aea473ac6d9d4573da@sentry.io/1188005',
+      (options) => options.dsn = '',
       appRunner: () {
     WidgetsFlutterBinding.ensureInitialized();
     runApp(MyApp());
